@@ -22,6 +22,7 @@ import ReporteItsePage from '@features/reportes/pages/ReporteItsePage'
 import ReporteExpedientesPage from '@features/reportes/pages/ReporteExpedientesPage'
 import PersonasPage from '@features/personas/pages/PersonasPage'
 import GirosPage from '@features/giros/pages/GirosPage'
+import InspectoresPage from '@features/inspectores/pages/InspectoresPage'
 import ZonificacionesPage from '@features/zonificaciones/pages/ZonificacionesPage'
 import TiposProcedimientoTupaPage from '@features/tipos-procedimiento-tupa/pages/TiposProcedimientoTupaPage'
 import UsuariosPage from '@features/usuarios/pages/UsuariosPage'
@@ -243,6 +244,14 @@ function App() {
           element={
             <ProtectedRoute>
               <GirosPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/catalogos/inspectores"
+          element={
+            <ProtectedRoute>
+              <InspectoresPage />
             </ProtectedRoute>
           }
         />
