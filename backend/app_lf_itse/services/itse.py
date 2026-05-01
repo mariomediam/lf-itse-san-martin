@@ -122,6 +122,10 @@ _FILTROS_BUSQUEDA_ITSE: dict[str, tuple[str, callable]] = {
         'WHERE e.numero_expediente = %s',
         int,
     ),
+    'EXPEDIENTE_ID': (
+        'WHERE e.id = %s',
+        int,
+    ),
     'NOMBRE_COMERCIAL': (
         'WHERE i.nombre_comercial ILIKE %s',
         lambda v: '%' + v.replace(' ', '%') + '%',
