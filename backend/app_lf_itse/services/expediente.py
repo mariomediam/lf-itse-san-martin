@@ -171,12 +171,14 @@ FROM (
             WHEN tpt.requiere_lf = FALSE THEN FALSE
             WHEN tpt.requiere_lf = TRUE AND lf.id IS NOT NULL THEN FALSE
             WHEN tpt.requiere_lf = TRUE AND t_lf_improcedentes.id IS NOT NULL THEN FALSE
+            WHEN tpt.requiere_lf = TRUE AND t_itse_improcedentes.id IS NOT NULL THEN FALSE
             ELSE TRUE
         END AS licencia_pendiente,
         CASE
             WHEN tpt.requiere_itse = FALSE THEN FALSE
             WHEN tpt.requiere_itse = TRUE AND i.id IS NOT NULL THEN FALSE
             WHEN tpt.requiere_itse = TRUE AND t_itse_improcedentes.id IS NOT NULL THEN FALSE
+            WHEN tpt.requiere_itse = TRUE AND t_lf_improcedentes.id IS NOT NULL THEN FALSE
             ELSE TRUE
         END AS itse_pendiente
     FROM expedientes e
