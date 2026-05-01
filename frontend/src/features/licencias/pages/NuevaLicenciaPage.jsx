@@ -169,9 +169,12 @@ export default function NuevaLicenciaPage() {
   useEffect(() => {
     if (!expedienteId) return
 
+    let active = true
     setLoadingItse(true)
+
     itseApi.buscar('EXPEDIENTE_ID', expedienteId)
       .then(async (res) => {
+        if (!active) return
         if (!res.data || res.data.length === 0) return
 
         const itse = res.data[0]
@@ -190,6 +193,8 @@ export default function NuevaLicenciaPage() {
           itseApi.getGiros(itse.id),
         ])
 
+        if (!active) return
+
         if (resTitular.data[0]) setTitular(buildPersonaOption(resTitular.data[0]))
         if (resRep?.data[0])    setRepresentante(buildPersonaOption(resRep.data[0]))
 
@@ -204,7 +209,9 @@ export default function NuevaLicenciaPage() {
         toast.info('Se precargaron datos de la ITSE existente para este expediente')
       })
       .catch(() => {})
-      .finally(() => setLoadingItse(false))
+      .finally(() => { if (active) setLoadingItse(false) })
+
+    return () => { active = false }
   }, [expedienteId])
 
   // ── Giros ────────────────────────────────────────────────────────────────────
