@@ -82,6 +82,19 @@ class GiroWriteSerializer(serializers.Serializer):
     esta_activo = serializers.BooleanField(default=True)
 
 
+class InspectorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Inspector
+        fields = '__all__'
+
+
+class InspectorWriteSerializer(serializers.Serializer):
+    """Valida los datos de entrada para crear o actualizar un Inspector."""
+    apellido_paterno = serializers.CharField(max_length=50)
+    apellido_materno = serializers.CharField(max_length=50)
+    nombres          = serializers.CharField(max_length=50)
+
+
 class PersonaDocumentoSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.PersonaDocumento

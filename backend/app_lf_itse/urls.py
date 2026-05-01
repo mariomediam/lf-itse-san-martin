@@ -34,6 +34,9 @@ from .views import (
     GiroDetailView,
     GiroListCreateView,
     GirosBuscarView,
+    InspectorBuscarView,
+    InspectorDetailView,
+    InspectorListCreateView,
     ItseArchivoDetailView,
     ItseArchivoDownloadView,
     ItseArchivoUploadView,
@@ -122,6 +125,9 @@ urlpatterns = [
     path('giros/',          GiroListCreateView.as_view(),  name='giro-list-create'),
     path('giros/<int:pk>/', GiroDetailView.as_view(),      name='giro-detail'),
     path('giros/buscar/',   GirosBuscarView.as_view(),     name='giro-buscar'),
+    path('inspectores/',          InspectorListCreateView.as_view(), name='inspector-list-create'),
+    path('inspectores/<int:pk>/', InspectorDetailView.as_view(),     name='inspector-detail'),
+    path('inspectores/buscar/',   InspectorBuscarView.as_view(),     name='inspector-buscar'),
 
     # Personas
     path('personas/',        PersonaListCreateView.as_view(), name='persona-list-create'),

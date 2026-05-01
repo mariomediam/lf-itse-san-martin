@@ -53,6 +53,8 @@ from .serializers import (
     UnidadOrganicaSerializer,
     ZonificacionSerializer,
     ZonificacionWriteSerializer,
+    InspectorSerializer,
+    InspectorWriteSerializer,
     PersonaDocumentoListSerializer,
     PersonaSerializer,
     PersonaWriteSerializer,
@@ -130,6 +132,14 @@ from .services.zonificacion import (
     eliminar_zonificacion,
     listar_zonificaciones,
     obtener_zonificacion,
+)
+from .services.inspector import (
+    actualizar_inspector,
+    buscar_inspectores,
+    crear_inspector,
+    eliminar_inspector,
+    listar_inspectores,
+    obtener_inspector,
 )
 from .services.persona import (
     DocumentoDuplicadoError,
@@ -3242,6 +3252,163 @@ class LicenciasFuncionamientoReporteView(APIView):
 
         except Exception as e:
             logger.exception('Error al generar el reporte de licencias de funcionamiento')
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+class InspectorListCreateView(APIView):
+    """
+    GET  /api/lf-itse/inspectores/
+        Lista todos los inspectores ordenados por apellido paterno y nombres.
+
+    POST /api/lf-itse/inspectores/
+        Crea un nuevo inspector.
+
+    Requiere autenticación JWT.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            inspectores = listar_inspectores()
+            serializer = InspectorSerializer(inspectores, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            logger.exception('Error al listar inspectores')
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    def post(self, request):
+        serializer = InspectorWriteSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            inspector = crear_inspector(
+                data=serializer.validated_data,
+                usuario=request.user,
+            )
+            return Response(
+                InspectorSerializer(inspector).data,
+                status=status.HTTP_201_CREATED,
+            )
+
+        except Exception as e:
+            logger.exception('Error al crear inspector')
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+class InspectorDetailView(APIView):
+    """
+    GET    /api/lf-itse/inspectores/<pk>/
+        Retorna un inspector específico.
+
+    PUT    /api/lf-itse/inspectores/<pk>/
+        Actualiza un inspector.
+
+    DELETE /api/lf-itse/inspectores/<pk>/
+        Elimina físicamente un inspector.
+        Retorna 409 si está asignado a certificados ITSE.
+
+    Requiere autenticación JWT.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        try:
+            inspector = obtener_inspector(pk)
+            return Response(
+                InspectorSerializer(inspector).data,
+                status=status.HTTP_200_OK,
+            )
+
+        except Exception as e:
+            logger.exception('Error al obtener inspector pk=%s', pk)
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    def put(self, request, pk):
+        try:
+            inspector_instance = obtener_inspector(pk)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = InspectorWriteSerializer(inspector_instance, data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            inspector = actualizar_inspector(pk, serializer.validated_data)
+            return Response(
+                InspectorSerializer(inspector).data,
+                status=status.HTTP_200_OK,
+            )
+
+        except Exception as e:
+            logger.exception('Error al actualizar inspector pk=%s', pk)
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    def delete(self, request, pk):
+        try:
+            eliminar_inspector(pk)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        except ProtectedError:
+            return Response(
+                {'error': 'No se puede eliminar: el inspector está asignado a certificados ITSE.'},
+                status=status.HTTP_409_CONFLICT,
+            )
+
+        except Exception as e:
+            logger.exception('Error al eliminar inspector pk=%s', pk)
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+class InspectorBuscarView(APIView):
+    """
+    GET /api/lf-itse/inspectores/buscar/
+
+    Busca inspectores por nombre completo (apellido paterno + apellido materno
+    + nombres), insensible a mayúsculas y minúsculas.
+
+    Parámetros de query string
+    --------------------------
+    busqueda : str (opcional)
+        Texto libre a buscar en el nombre completo del inspector.
+        Si se omite se devuelven todos los registros.
+
+    Requiere autenticación JWT.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            busqueda = request.query_params.get('busqueda', '').strip() or None
+            inspectores = buscar_inspectores(busqueda=busqueda)
+            serializer = InspectorSerializer(inspectores, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            logger.exception('Error al buscar inspectores')
             return Response(
                 {'error': str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
