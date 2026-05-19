@@ -50,6 +50,12 @@ class NivelRiesgoSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ActividadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Actividad
+        fields = '__all__'
+
+
 class TipoLicenciaSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.TipoLicencia
@@ -564,7 +570,7 @@ class LicenciaFuncionamientoCreateSerializer(serializers.Serializer):
     fecha_inicio_vigencia    = serializers.DateField(required=False, allow_null=True)
     fecha_fin_vigencia       = serializers.DateField(required=False, allow_null=True)
     nivel_riesgo_id          = serializers.IntegerField()
-    actividad                = serializers.CharField(max_length=50)
+    actividad_id             = serializers.IntegerField(min_value=1)
     direccion                = serializers.CharField(max_length=250)
     hora_desde               = serializers.IntegerField()
     hora_hasta               = serializers.IntegerField()
@@ -629,7 +635,7 @@ class LicenciaFuncionamientoUpdateSerializer(serializers.Serializer):
     fecha_inicio_vigencia    = serializers.DateField(required=False, allow_null=True)
     fecha_fin_vigencia       = serializers.DateField(required=False, allow_null=True)
     nivel_riesgo_id          = serializers.IntegerField()
-    actividad                = serializers.CharField(max_length=50)
+    actividad_id             = serializers.IntegerField(min_value=1)
     direccion                = serializers.CharField(max_length=250)
     hora_desde               = serializers.IntegerField()
     hora_hasta               = serializers.IntegerField()
