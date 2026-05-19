@@ -196,7 +196,17 @@ const LicenciaImprimirPage = () => {
 
   return (
     <>
+      {/* Fuentes Google */}
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet"
+      />
+
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
         @media print {
           @page { size: A4 landscape; margin: 0; }
           body  { -webkit-print-color-adjust: exact; print-color-adjust: exact; margin: 0; padding: 0; }
@@ -279,7 +289,7 @@ const LicenciaImprimirPage = () => {
             backgroundImage: `url(${bgImage})`,
             backgroundSize: '100% 100%',
             backgroundRepeat: 'no-repeat',
-            fontFamily: 'Arial, sans-serif',
+            fontFamily: "'Inter', Arial, sans-serif",
             color: '#000',
             display: 'flex',
             flexDirection: 'column',
@@ -292,14 +302,14 @@ const LicenciaImprimirPage = () => {
           <div style={{ flex: 1, padding: '50mm 22px 2px 22px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
 
             {/* Título */}
-            <div style={{ textAlign: 'center', lineHeight: '1.2' }}>
-              <div style={{ fontWeight: 'bold', fontSize: '21px', textTransform: 'uppercase', letterSpacing: '1.5px', color: '#000' }}>
+            <div style={{ textAlign: 'center', lineHeight: '1.1' }}>
+              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '32px', letterSpacing: '3px', color: '#000' }}>
                 LICENCIA DE FUNCIONAMIENTO
               </div>
-              <div style={{ fontWeight: 'bold', fontSize: '16px', color: VERDE_TABLA, letterSpacing: '1px' }}>
+              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '22px', color: VERDE_TABLA, letterSpacing: '2px' }}>
                 LEY 28976
               </div>
-              <div style={{ fontWeight: 'bold', fontSize: '10px', letterSpacing: '0.4px', marginTop: '1px' }}>
+              <div style={{ fontFamily: "'Inter', Arial, sans-serif", fontWeight: '700', fontSize: '10px', letterSpacing: '0.4px', marginTop: '2px' }}>
                 ORDENANZA MUNICIPAL Nº 027-2021-MPSM
               </div>
             </div>
