@@ -188,9 +188,17 @@ const LicenciaImprimirPage = () => {
 
   const girosTexto = giros.map((g) => g.nombre).join(' / ')
 
-  const vigenciaTexto = !licencia.es_vigencia_indeterminada && licencia.fecha_inicio_vigencia && licencia.fecha_fin_vigencia
-    ? `${formatFechaLarga(licencia.fecha_inicio_vigencia)} AL ${formatFechaLarga(licencia.fecha_fin_vigencia)}`
-    : ''
+
+  // Estilos compartidos para <th> de la tabla 2
+  const thSt = {
+    border: `1.5px solid ${VERDE_TABLA}`,
+    background: VERDE_CLARO,
+    padding: '3px 6px',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: '9px',
+    textTransform: 'uppercase',
+  }
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
@@ -336,62 +344,36 @@ const LicenciaImprimirPage = () => {
 
             {/* Tabla 2: Resolución / Vigencia / Actividad Económica */}
             <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
-              <thead>
-                <tr>
-                  {/* Resolución */}
-                  <Th style={{ width: '22%' }}>N° DE RESOLUCIÓN</Th>
-
-                  {/* Vigencia — encabezado con sub-columnas */}
-                  <th style={{
-                    border: `1.5px solid ${VERDE_TABLA}`,
-                    padding: 0,
-                    width: '28%',
-                    background: VERDE_CLARO,
-                  }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                      <tbody>
-                        <tr>
-                          <td colSpan={4} style={{
-                            textAlign: 'center', fontWeight: 'bold', fontSize: '9px',
-                            textTransform: 'uppercase', padding: '2px 4px',
-                            borderBottom: `1px solid ${VERDE_TABLA}`,
-                          }}>
-                            VIGENCIA
-                          </td>
-                        </tr>
-                        <tr>
-                          <td style={{ textAlign: 'center', fontSize: '8.5px', fontWeight: 'bold', padding: '2px 3px', width: '40%', borderRight: `1px solid ${VERDE_TABLA}` }}>INDETERMINADO</td>
-                          <td style={{ textAlign: 'center', fontSize: '12px', fontWeight: 'bold', padding: '2px', width: '10%', borderRight: `1px solid ${VERDE_TABLA}` }}>
-                            {licencia.es_vigencia_indeterminada ? 'X' : ''}
-                          </td>
-                          <td style={{ textAlign: 'center', fontSize: '8.5px', fontWeight: 'bold', padding: '2px 3px', width: '35%', borderRight: `1px solid ${VERDE_TABLA}` }}>TEMPORAL</td>
-                          <td style={{ textAlign: 'center', fontSize: '12px', fontWeight: 'bold', padding: '2px', width: '15%' }}>
-                            {!licencia.es_vigencia_indeterminada ? 'X' : ''}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </th>
-
-                  {/* Actividad económica + checkboxes */}
-                  <Th style={{ width: '17%' }}>ACTIVIDAD<br />ECONÓMICA</Th>
-                  <Th style={{ width: '11%' }}>Comercio</Th>
-                  <Th style={{ width: '11%' }}>Servicio</Th>
-                  <Th style={{ width: '11%' }}>Industria</Th>
-                </tr>
-              </thead>
               <tbody>
+                {/* ── Fila 1: encabezados ── */}
                 <tr>
-                  <Td style={{ fontWeight: 'bold', textAlign: 'left', paddingLeft: '8px', fontSize: '10px' }}>
+                  <th style={{ ...thSt, width: '22%' }}>N° DE RESOLUCIÓN</th>
+                  <th colSpan={4} style={{ ...thSt }}>VIGENCIA</th>
+                  {/* rowSpan=2 elimina la celda vacía debajo */}
+                  <th rowSpan={2} style={{ ...thSt, width: '12%', verticalAlign: 'middle' }}>
+                    ACTIVIDAD<br />ECONÓMICA
+                  </th>
+                  <th style={{ ...thSt, width: '10%' }}>Comercio</th>
+                  <th style={{ ...thSt, width: '10%' }}>Servicio</th>
+                  <th style={{ ...thSt, width: '10%' }}>Industria</th>
+                </tr>
+                {/* ── Fila 2: sub-etiquetas VIGENCIA + datos resolución + checkboxes ── */}
+                <tr>
+                  <Td style={{ width: '22%', fontWeight: 'bold', textAlign: 'left', paddingLeft: '8px', fontSize: '10px' }}>
                     {licencia.resolucion_numero || '-'}
                   </Td>
-                  <Td style={{ fontSize: '8.5px', color: '#444' }}>
-                    {vigenciaTexto}
+                  <Td style={{ width: '15%', fontSize: '8.5px', fontWeight: 'bold' }}>Indeterminado</Td>
+                  <Td style={{ width: '3%',  fontSize: '13px', fontWeight: 'bold' }}>
+                    {licencia.es_vigencia_indeterminada ? 'X' : ''}
                   </Td>
-                  <Td />
-                  <Td style={{ fontWeight: 'bold', fontSize: '15px' }}>{actividadId === 1 ? 'X' : ''}</Td>
-                  <Td style={{ fontWeight: 'bold', fontSize: '15px' }}>{actividadId === 2 ? 'X' : ''}</Td>
-                  <Td style={{ fontWeight: 'bold', fontSize: '15px' }}>{actividadId === 3 ? 'X' : ''}</Td>
+                  <Td style={{ width: '15%', fontSize: '8.5px', fontWeight: 'bold' }}>Temporal</Td>
+                  <Td style={{ width: '3%',  fontSize: '13px', fontWeight: 'bold' }}>
+                    {!licencia.es_vigencia_indeterminada ? 'X' : ''}
+                  </Td>
+                  {/* Sin celda para ACTIVIDAD — cubierta por rowSpan=2 */}
+                  <Td style={{ width: '10%', fontWeight: 'bold', fontSize: '15px' }}>{actividadId === 1 ? 'X' : ''}</Td>
+                  <Td style={{ width: '10%', fontWeight: 'bold', fontSize: '15px' }}>{actividadId === 2 ? 'X' : ''}</Td>
+                  <Td style={{ width: '10%', fontWeight: 'bold', fontSize: '15px' }}>{actividadId === 3 ? 'X' : ''}</Td>
                 </tr>
               </tbody>
             </table>
