@@ -119,6 +119,20 @@ function CardDatosPrincipales({ licencia }) {
         <Campo etiqueta="Número de recibo"  valor={licencia.numero_recibo_pago} />
       </div>
 
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
+        <div>
+          <p className="text-xs text-gray-500 mb-0.5">Autorización sectorial</p>
+          <span className={[
+            'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold',
+            licencia.requiere_auth_sectorial
+              ? 'bg-amber-100 text-amber-700 border border-amber-300'
+              : 'bg-gray-100 text-gray-500',
+          ].join(' ')}>
+            {licencia.requiere_auth_sectorial ? 'Requiere' : 'No requiere'}
+          </span>
+        </div>
+      </div>
+
       {(licencia.observaciones || licencia.fecha_notificacion) && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
           {licencia.fecha_notificacion && (

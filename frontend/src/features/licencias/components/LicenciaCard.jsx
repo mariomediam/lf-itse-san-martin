@@ -160,6 +160,11 @@ export default function LicenciaCard({ licencia, onRefrescar }) {
                 Inactiva
               </span>
             )}
+            {licencia.requiere_auth_sectorial && (
+              <span className="px-3 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-300">
+                Auth. sectorial
+              </span>
+            )}
           </div>
 
           {/* Nombre comercial */}

@@ -121,11 +121,12 @@ export default function ModificarLicenciaPage() {
   const [representante, setRepresentante] = useState(null)
 
   // Establecimiento
-  const [nombreComercial, setNombreComercial] = useState('')
-  const [actividadId,     setActividadId]     = useState('')
-  const [direccion,       setDireccion]       = useState('')
-  const [zonificacionId,  setZonificacionId]  = useState('')
-  const [area,            setArea]            = useState('')
+  const [nombreComercial,       setNombreComercial]       = useState('')
+  const [actividadId,           setActividadId]           = useState('')
+  const [direccion,             setDireccion]             = useState('')
+  const [zonificacionId,        setZonificacionId]        = useState('')
+  const [area,                  setArea]                  = useState('')
+  const [requiereAuthSectorial, setRequiereAuthSectorial] = useState(false)
 
   // Giros
   const [giros,            setGiros]            = useState([])
@@ -205,6 +206,7 @@ export default function ModificarLicenciaPage() {
         setDireccion(lf.direccion ?? '')
         setZonificacionId(String(lf.zonificacion_id))
         setArea(String(lf.area))
+        setRequiereAuthSectorial(lf.requiere_auth_sectorial ?? false)
 
         // Observaciones
         setObservaciones(lf.observaciones ?? '')
@@ -300,6 +302,7 @@ export default function ModificarLicenciaPage() {
       numero_recibo_pago:       numeroReciboPago.trim(),
       observaciones:            observaciones.trim() || null,
       se_puede_publicar:        false,
+      requiere_auth_sectorial:  requiereAuthSectorial,
       giros:                    giros.map((g) => ({ giro_id: g.id })),
     }
 
@@ -545,8 +548,8 @@ export default function ModificarLicenciaPage() {
                   </div>
                 </div>
 
-                {/* Fila 4: Recibo */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Fila 4: Recibo + Auth. sectorial */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
                   <div>
                     <label className="block text-xs font-medium text-gray-600 mb-1.5">
                       N° de recibo de pago
@@ -558,6 +561,35 @@ export default function ModificarLicenciaPage() {
                       placeholder="Ej. 00567587 (opcional)"
                       className={inputClass}
                     />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1.5">
+                      Autorización sectorial
+                    </label>
+                    <div className="flex items-center gap-3 h-[38px]">
+                      <button
+                        type="button"
+                        role="switch"
+                        aria-checked={requiereAuthSectorial}
+                        onClick={() => setRequiereAuthSectorial((v) => !v)}
+                        className={[
+                          'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent',
+                          'transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary/30',
+                          requiereAuthSectorial ? 'bg-primary' : 'bg-gray-300',
+                        ].join(' ')}
+                      >
+                        <span
+                          className={[
+                            'pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow',
+                            'transform transition duration-200',
+                            requiereAuthSectorial ? 'translate-x-5' : 'translate-x-0',
+                          ].join(' ')}
+                        />
+                      </button>
+                      <span className="text-sm font-medium text-gray-700">
+                        {requiereAuthSectorial ? 'Requiere' : 'No requiere'}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
