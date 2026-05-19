@@ -71,6 +71,7 @@ SELECT
     lf.numero_recibo_pago,
     lf.observaciones,
     lf.se_puede_publicar,
+    lf.requiere_auth_sectorial,
     lf.fecha_notificacion,
     lf.usuario_id,
     lf.fecha_digitacion,
@@ -488,9 +489,10 @@ def crear_licencia(data: dict, usuario) -> LicenciaFuncionamiento:
             zonificacion_id       = data['zonificacion_id'],
             area                  = data['area'],
             numero_recibo_pago    = data['numero_recibo_pago'],
-            observaciones         = data.get('observaciones'),
-            se_puede_publicar     = data.get('se_puede_publicar', False),
-            usuario               = usuario,
+            observaciones             = data.get('observaciones'),
+            se_puede_publicar         = data.get('se_puede_publicar', False),
+            requiere_auth_sectorial   = data.get('requiere_auth_sectorial', False),
+            usuario                   = usuario,
             fecha_digitacion      = timezone.now(),
         )
 
@@ -585,8 +587,9 @@ def modificar_licencia(licencia_id: int, data: dict, usuario=None) -> LicenciaFu
         licencia.zonificacion_id        = data['zonificacion_id']
         licencia.area                   = data['area']
         licencia.numero_recibo_pago     = data['numero_recibo_pago']
-        licencia.observaciones          = data.get('observaciones')
-        licencia.se_puede_publicar      = data.get('se_puede_publicar', False)
+        licencia.observaciones            = data.get('observaciones')
+        licencia.se_puede_publicar        = data.get('se_puede_publicar', False)
+        licencia.requiere_auth_sectorial  = data.get('requiere_auth_sectorial', False)
         licencia.save()
 
         # Reemplaza completamente los giros asociados
@@ -838,6 +841,7 @@ SELECT
     lf.numero_recibo_pago,
     lf.observaciones,
     lf.se_puede_publicar,
+    lf.requiere_auth_sectorial,
     lf.fecha_notificacion,
     lf.usuario_id,
     lf.fecha_digitacion,
@@ -1344,6 +1348,7 @@ SELECT
     licencias_funcionamiento.numero_recibo_pago,
     licencias_funcionamiento.observaciones,
     licencias_funcionamiento.se_puede_publicar,
+    licencias_funcionamiento.requiere_auth_sectorial,
     licencias_funcionamiento.fecha_notificacion,
     licencias_funcionamiento.usuario_id,
     licencias_funcionamiento.fecha_digitacion,
