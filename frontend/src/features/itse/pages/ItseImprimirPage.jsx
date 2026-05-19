@@ -192,7 +192,7 @@ const ItseImprimirPage = () => {
               onError={(e) => { e.target.style.display = 'none' }} />
             <div style={{ textAlign: 'center', flex: 1, padding: '0 10px' }}>
               <p style={{ fontWeight: 'bold', fontSize: '18px', textTransform: 'uppercase', margin: '0 0 3px 0', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>
-                Municipalidad Provincial de Rioja
+                Municipalidad Provincial de San Martín
               </p>
               <p style={{ fontSize: '9px', fontStyle: 'italic', margin: 0, lineHeight: '1.3', color: '#333' }}>
                 RIOJA CIUDAD DE LOS SOMBREROS Y CAPITAL DEL CARNAVAL<br />EN LA REGIÓN SAN MARTIN
@@ -220,7 +220,7 @@ const ItseImprimirPage = () => {
 
           {/* ── PÁRRAFO INTRODUCTORIO ── */}
           <p style={{ fontSize: '11px', textAlign: 'justify', margin: '0 0 10px 0', lineHeight: '1.5' }}>
-            El Órgano Ejecutante de la <strong>MUNICIPALIDAD PROVINCIAL DE RIOJA</strong>, en cumplimiento de lo establecido en el
+            El Órgano Ejecutante de la <strong>Municipalidad Provincial de San Martín</strong>, en cumplimiento de lo establecido en el
             D.S. Nº002-2018-PCM, ha realizado la Inspección Técnica de Seguridad en Edificaciones al Establecimiento
             Objeto de Inspección:
           </p>
@@ -361,7 +361,7 @@ const ItseImprimirPage = () => {
 
           {/* ── MUNICIPALIDAD ── */}
           <p style={{ fontWeight: 'bold', fontSize: '12px', textAlign: 'center', textTransform: 'uppercase', margin: '12px 0 64px 0' }}>
-            Municipalidad Provincial de Rioja
+            Municipalidad Provincial de San Martín
           </p>
 
           {/* ── FIRMA ── */}

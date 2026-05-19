@@ -336,6 +336,16 @@ class AutorizacionImprocedente(models.Model):
         return f'autorizaciones_improcedentes expediente_id:{self.expediente_id} tipo:{self.tipo_autorizacion}'
 
 
+class Actividad(models.Model):
+    nombre = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = 'actividades'
+
+    def __str__(self):
+        return self.nombre
+
+
 class LicenciaFuncionamiento(models.Model):
     uuid = models.UUIDField(
         default=uuid.uuid4,
@@ -385,7 +395,12 @@ class LicenciaFuncionamiento(models.Model):
         on_delete=models.PROTECT,
         db_column='nivel_riesgo_id',
     )
-    actividad = models.CharField(max_length=50)
+    actividad = models.ForeignKey(
+        Actividad,
+        on_delete=models.PROTECT,
+        db_column='actividad_id',
+        default=1,
+    )
     direccion = models.CharField(max_length=250)
     hora_desde = models.IntegerField()
     hora_hasta = models.IntegerField()
@@ -783,6 +798,7 @@ auditlog.register(PersonaDocumento)
 auditlog.register(Expediente)
 auditlog.register(ExpedienteArchivo)
 auditlog.register(AutorizacionImprocedente)
+auditlog.register(Actividad)
 auditlog.register(LicenciaFuncionamiento)
 auditlog.register(LicenciaFuncionamientoArchivo)
 auditlog.register(LicenciaFuncionamientoEstado)

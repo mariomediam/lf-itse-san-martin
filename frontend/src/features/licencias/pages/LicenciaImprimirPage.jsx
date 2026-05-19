@@ -233,7 +233,7 @@ const LicenciaImprimirPage = () => {
             />
             <div style={{ textAlign: 'center', flex: 1 }}>
               <p style={{ fontWeight: 'bold', fontSize: '24px', textTransform: 'uppercase', letterSpacing: '-0.5px', margin: 0, lineHeight: '1.2', color: '#4a9e4a', whiteSpace: 'nowrap' }}>
-                Municipalidad Provincial de Rioja
+                Municipalidad Provincial de San Martín
               </p>
             </div>
             <img
