@@ -194,7 +194,7 @@ export default function LicenciaCard({ licencia, onRefrescar }) {
           {/* Actividad */}
           <p className="text-xs text-gray-500">
             Actividad económica:{' '}
-            <strong className="text-gray-700">{licencia.actividad}</strong>
+            <strong className="text-gray-700">{licencia.actividad_nombre}</strong>
           </p>
         </div>
 

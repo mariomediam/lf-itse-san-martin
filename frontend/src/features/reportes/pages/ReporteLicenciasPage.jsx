@@ -133,6 +133,14 @@ function LicenciaCard({ lic }) {
               <p className="text-xs text-gray-700 leading-snug">{lic.giro_concatenado}</p>
             </div>
           )}
+          {
+            lic.actividad_nombre && (
+              <div className="mt-1">
+                <p className="text-xs font-medium text-gray-500 mb-0.5">Actividad</p>
+                <p className="text-xs text-gray-700 leading-snug">{lic.actividad_nombre}</p>
+              </div>
+            )
+          }
         </div>
 
         {/* Columna 2 — Titular y conductor */}
@@ -439,6 +447,7 @@ export default function ReporteLicenciasPage() {
                                     : lic.fecha_inicio_vigencia
                                       ? `${formatFecha(lic.fecha_inicio_vigencia)} - ${formatFecha(lic.fecha_fin_vigencia)}`
                                       : '',
+      'Actividad':                lic.actividad_nombre     || '',
       'Estado':                   lic.esta_activo ? 'Activa' : 'Inactiva',
     }))
 

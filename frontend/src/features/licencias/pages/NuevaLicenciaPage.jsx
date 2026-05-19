@@ -101,6 +101,7 @@ export default function NuevaLicenciaPage() {
   const [tiposLicencia,  setTiposLicencia]  = useState([])
   const [nivelesRiesgo,  setNivelesRiesgo]  = useState([])
   const [zonificaciones, setZonificaciones] = useState([])
+  const [actividades,    setActividades]    = useState([])
   const [loadingCatalogos, setLoadingCatalogos] = useState(true)
 
   // Datos principales
@@ -122,7 +123,7 @@ export default function NuevaLicenciaPage() {
 
   // Establecimiento
   const [nombreComercial, setNombreComercial] = useState('')
-  const [actividad,       setActividad]       = useState('')
+  const [actividadId,     setActividadId]     = useState('')
   const [direccion,       setDireccion]       = useState('')
   const [zonificacionId,  setZonificacionId]  = useState('')
   const [area,            setArea]            = useState('')
@@ -154,11 +155,13 @@ export default function NuevaLicenciaPage() {
       licenciasApi.getTiposLicencia(),
       licenciasApi.getNivelesRiesgo(),
       licenciasApi.getZonificaciones(),
+      licenciasApi.getActividades(),
     ])
-      .then(([tipos, niveles, zonas]) => {
+      .then(([tipos, niveles, zonas, acts]) => {
         setTiposLicencia(tipos.data)
         setNivelesRiesgo(niveles.data)
         setZonificaciones(zonas.data)
+        setActividades(acts.data)
       })
       .catch(() => toast.error('Error al cargar los catálogos'))
       .finally(() => setLoadingCatalogos(false))
@@ -239,7 +242,7 @@ export default function NuevaLicenciaPage() {
     if (!titular)          { toast.error('Seleccione el titular de la licencia');      return }
     if (!representante)    { toast.error('Seleccione el representante legal');         return }
     if (!nombreComercial)  { toast.error('Ingrese el nombre comercial');               return }
-    if (!actividad)        { toast.error('Ingrese la actividad económica');            return }
+    if (!actividadId)      { toast.error('Seleccione la actividad económica');         return }
     if (!direccion)        { toast.error('Ingrese la dirección del local');            return }
     if (!zonificacionId)   { toast.error('Seleccione la zonificación');               return }
     if (!area)             { toast.error('Ingrese el área del establecimiento');       return }
@@ -267,7 +270,7 @@ export default function NuevaLicenciaPage() {
       fecha_inicio_vigencia:   esVigenciaIndeter ? null : fechaInicioVigencia,
       fecha_fin_vigencia:      esVigenciaIndeter ? null : fechaFinVigencia,
       nivel_riesgo_id:         Number(nivelRiesgoId),
-      actividad:               actividad.trim(),
+      actividad_id:            Number(actividadId),
       direccion:               direccion.trim(),
       hora_desde:              Number(horaDesde),
       hora_hasta:              Number(horaHasta),
@@ -566,13 +569,19 @@ export default function NuevaLicenciaPage() {
                   <label className="block text-xs font-medium text-gray-600 mb-1.5">
                     Actividad económica <span className="text-danger">*</span>
                   </label>
-                  <input
-                    type="text"
-                    value={actividad}
-                    onChange={(e) => setActividad(e.target.value)}
-                    placeholder="Ej. Servicio de expendio de comidas y bebidas"
-                    className={inputClass}
-                  />
+                  <select
+                    value={actividadId}
+                    onChange={(e) => setActividadId(e.target.value)}
+                    disabled={loadingCatalogos}
+                    className={selectClass}
+                  >
+                    <option value="">
+                      {loadingCatalogos ? 'Cargando...' : 'Seleccione una actividad'}
+                    </option>
+                    {actividades.map((a) => (
+                      <option key={a.id} value={a.id}>{a.nombre}</option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>

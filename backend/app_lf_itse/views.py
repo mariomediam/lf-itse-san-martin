@@ -22,6 +22,7 @@ from .models import (
     Persona,
 )
 from .serializers import (
+    ActividadSerializer,
     AmpliacionPlazoSerializer,
     AutorizacionImprocedenteSerializer,
     DenegarLicenciaSerializer,
@@ -67,6 +68,7 @@ from .serializers import (
     UsuarioSerializer,
     UsuarioWriteSerializer,
 )
+from .services.actividad import listar_actividades
 from .services.expediente import (
     ExpedienteConItseError,
     ExpedienteConLicenciaError,
@@ -2308,6 +2310,30 @@ class ItsePorRenovarView(APIView):
             logger.exception('Error al listar ITSE por renovar')
             return Response(
                 {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+class ActividadListView(APIView):
+    """
+    GET /api/lf-itse/actividades/
+
+    Retorna todas las actividades ordenadas por id.
+
+    Requiere autenticación JWT.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            actividades = listar_actividades()
+            serializer = ActividadSerializer(actividades, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception:
+            logger.exception('Error al listar actividades')
+            return Response(
+                {'error': 'Error al obtener las actividades.'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 

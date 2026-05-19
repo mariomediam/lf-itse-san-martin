@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    ActividadListView,
     AutorizacionImprocedenteView,
     DenegarItseView,
     DenegarLicenciaView,
@@ -126,6 +127,7 @@ urlpatterns = [
     path('licencias-funcionamiento/<int:pk>/notificacion/',    LicenciaFuncionamientoNotificacionView.as_view(),        name='licencia-funcionamiento-notificacion'),
     path('estados/inactivos-itse/', EstadosInactivosItseListView.as_view(), name='estado-inactivos-itse-list'),
     path('estados/inactivos-lf/', EstadosInactivosLfListView.as_view(), name='estado-inactivos-lf-list'),
+    path('actividades/', ActividadListView.as_view(), name='actividad-list'),
     path('niveles-riesgo/', NivelRiesgoListView.as_view(), name='nivel-riesgo-list'),
     path('tipos-licencia/', TipoLicenciaListView.as_view(), name='tipo-licencia-list'),
     path('zonificaciones/',          ZonificacionListView.as_view(),   name='zonificacion-list'),

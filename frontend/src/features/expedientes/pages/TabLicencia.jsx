@@ -180,7 +180,7 @@ function CardEstablecimiento({ licencia }) {
 
       <div className="space-y-4">
         <Campo etiqueta="Nombre comercial"    valor={licencia.nombre_comercial} />
-        <Campo etiqueta="Actividad económica" valor={licencia.actividad} />
+        <Campo etiqueta="Actividad económica" valor={licencia.actividad_nombre} />
         <Campo etiqueta="Dirección del local" valor={licencia.direccion} />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
