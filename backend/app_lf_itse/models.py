@@ -416,6 +416,7 @@ class LicenciaFuncionamiento(models.Model):
     # dias_atencion = models.CharField(max_length=50, blank=True, null=True)
     # numero_folios = models.CharField(max_length=50, blank=True, null=True)
     se_puede_publicar = models.BooleanField(default=False)
+    requiere_auth_sectorial = models.BooleanField(default=False)
     fecha_notificacion = models.DateTimeField(null=True, blank=True)
     usuario = models.ForeignKey(
         settings.AUTH_USER_MODEL,

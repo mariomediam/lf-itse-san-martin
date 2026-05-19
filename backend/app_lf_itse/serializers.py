@@ -589,6 +589,7 @@ class LicenciaFuncionamientoCreateSerializer(serializers.Serializer):
                                    allow_null=True,
                                )
     se_puede_publicar        = serializers.BooleanField(default=False)
+    requiere_auth_sectorial  = serializers.BooleanField(default=False)
     giros                    = _GiroItemSerializer(many=True)
 
     def validate(self, data):
@@ -654,6 +655,7 @@ class LicenciaFuncionamientoUpdateSerializer(serializers.Serializer):
                                    allow_null=True,
                                )
     se_puede_publicar        = serializers.BooleanField(default=False)
+    requiere_auth_sectorial  = serializers.BooleanField(default=False)
     giros                    = _GiroItemSerializer(many=True)
 
     def validate(self, data):
