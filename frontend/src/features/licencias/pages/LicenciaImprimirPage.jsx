@@ -216,7 +216,7 @@ const LicenciaImprimirPage = () => {
         }
         @media screen {
           .cert-wrapper {
-            background: #d1d5db;
+            background: #ffffff;
             min-height: 100vh;
             padding: 32px;
             display: flex;
@@ -299,17 +299,17 @@ const LicenciaImprimirPage = () => {
 
           {/* ── CUERPO PRINCIPAL ──────────────────────────────────────────── */}
           {/* paddingTop: salta el encabezado verde que provee la imagen de fondo */}
-          <div style={{ flex: 1, padding: '50mm 22px 2px 22px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+          <div style={{ flex: 1, padding: '50mm 80px 2px 80px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
 
             {/* Título */}
-            <div style={{ textAlign: 'center', lineHeight: '1.1' }}>
-              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '32px', letterSpacing: '3px', color: '#000' }}>
+            <div style={{ textAlign: 'center', lineHeight: '1' }}>
+              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '48px', letterSpacing: '1px', color: '#000' }}>
                 LICENCIA DE FUNCIONAMIENTO
               </div>
-              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '22px', color: VERDE_TABLA, letterSpacing: '2px' }}>
+              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '28px', color: VERDE_TABLA, letterSpacing: '2px', fontWeight: 'bold', marginTop: '-6px' }}>
                 LEY 28976
               </div>
-              <div style={{ fontFamily: "'Inter', Arial, sans-serif", fontWeight: '700', fontSize: '10px', letterSpacing: '0.4px', marginTop: '2px' }}>
+              <div style={{ fontFamily: "'Inter', Arial, sans-serif", fontWeight: '800', fontSize: '21px', letterSpacing: '0.1px', marginTop: '2px' }}>
                 ORDENANZA MUNICIPAL Nº 027-2021-MPSM
               </div>
             </div>
@@ -318,10 +318,10 @@ const LicenciaImprimirPage = () => {
             <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
               <thead>
                 <tr>
-                  <Th style={{ width: '25%' }}>N° DE EXPEDIENTE</Th>
-                  <Th style={{ width: '25%' }}>FECHA DE SOLICITUD</Th>
-                  <Th style={{ width: '25%' }}>FECHA DE EMISIÓN</Th>
-                  <Th style={{ width: '25%', background: ROJO, color: '#fff' }}>N° DE LICENCIA</Th>
+                  <Th style={{ width: '25%', fontFamily: "'Bebas Neue', sans-serif", fontSize: '18px', fontStretch: 'condensed' }}>N° DE EXPEDIENTE</Th>
+                  <Th style={{ width: '25%', fontFamily: "'Bebas Neue', sans-serif", fontSize: '18px', fontStretch: 'condensed' }}>FECHA DE SOLICITUD</Th>
+                  <Th style={{ width: '25%', fontFamily: "'Bebas Neue', sans-serif", fontSize: '18px', fontStretch: 'condensed' }}>FECHA DE EMISIÓN</Th>
+                  <Th style={{ width: '25%', background: ROJO, color: '#fff', fontFamily: "'Bebas Neue', sans-serif", fontSize: '18px', fontStretch: 'condensed' }}>N° DE LICENCIA</Th>
                 </tr>
               </thead>
               <tbody>
