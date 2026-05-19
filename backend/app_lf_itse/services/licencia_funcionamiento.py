@@ -61,7 +61,7 @@ SELECT
     lf.fecha_inicio_vigencia,
     lf.fecha_fin_vigencia,
     lf.nivel_riesgo_id,
-    lf.actividad,
+    lf.actividad_id,
     lf.direccion,
     lf.hora_desde,
     lf.hora_hasta,
@@ -93,7 +93,8 @@ SELECT
     END AS esta_activo,
     tl.nombre  AS tipo_licencia_nombre,
     z.nombre   AS zonificacion_nombre,
-    nr.nombre  AS nivel_riesgo_nombre
+    nr.nombre  AS nivel_riesgo_nombre,
+    a.nombre  AS actividad_nombre
 FROM licencias_funcionamiento lf
 LEFT JOIN tipos_licencia tl
     ON lf.tipo_licencia_id = tl.id
@@ -126,6 +127,8 @@ LEFT JOIN zonificaciones z
     ON lf.zonificacion_id = z.id
 LEFT JOIN niveles_riesgo nr
     ON lf.nivel_riesgo_id = nr.id
+LEFT JOIN actividades a
+    ON lf.actividad_id = a.id
 {where}
 ORDER BY lf.numero_licencia DESC
 """
@@ -477,7 +480,7 @@ def crear_licencia(data: dict, usuario) -> LicenciaFuncionamiento:
             fecha_inicio_vigencia = fecha_inicio,
             fecha_fin_vigencia    = fecha_fin,
             nivel_riesgo_id       = data['nivel_riesgo_id'],
-            actividad             = data['actividad'],
+            actividad_id          = data['actividad_id'],
             direccion             = data['direccion'],
             hora_desde            = data['hora_desde'],
             hora_hasta            = data['hora_hasta'],
@@ -574,7 +577,7 @@ def modificar_licencia(licencia_id: int, data: dict, usuario=None) -> LicenciaFu
         licencia.fecha_inicio_vigencia  = fecha_inicio
         licencia.fecha_fin_vigencia     = fecha_fin
         licencia.nivel_riesgo_id        = data['nivel_riesgo_id']
-        licencia.actividad              = data['actividad']
+        licencia.actividad_id           = data['actividad_id']
         licencia.direccion              = data['direccion']
         licencia.hora_desde             = data['hora_desde']
         licencia.hora_hasta             = data['hora_hasta']
@@ -825,7 +828,7 @@ SELECT
     lf.fecha_inicio_vigencia,
     lf.fecha_fin_vigencia,
     lf.nivel_riesgo_id,
-    lf.actividad,
+    lf.actividad_id,
     lf.direccion,
     lf.hora_desde,
     lf.hora_hasta,
@@ -882,7 +885,9 @@ SELECT
     CASE
         WHEN li.licencia_funcionamiento_id IS NULL THEN TRUE
         ELSE FALSE
-    END AS esta_activo
+    END AS esta_activo,
+
+    a.nombre AS actividad_nombre
 
 FROM licencias_funcionamiento lf
 
@@ -903,6 +908,9 @@ LEFT JOIN zonificaciones z
 
 LEFT JOIN niveles_riesgo nr
     ON lf.nivel_riesgo_id = nr.id
+
+LEFT JOIN actividades a
+    ON lf.actividad_id = a.id
 
 LEFT JOIN (
     SELECT DISTINCT
@@ -1326,7 +1334,7 @@ SELECT
     licencias_funcionamiento.fecha_inicio_vigencia,
     licencias_funcionamiento.fecha_fin_vigencia,
     licencias_funcionamiento.nivel_riesgo_id,
-    licencias_funcionamiento.actividad,
+    licencias_funcionamiento.actividad_id,
     licencias_funcionamiento.direccion,
     licencias_funcionamiento.hora_desde,
     licencias_funcionamiento.hora_hasta,
@@ -1367,7 +1375,8 @@ SELECT
     CASE
         WHEN TLicenciasInactivas.licencia_funcionamiento_id IS NULL THEN TRUE
         ELSE FALSE
-    END AS esta_activo
+    END AS esta_activo,
+    a.nombre AS actividad_nombre
 FROM licencias_funcionamiento
 LEFT JOIN expedientes
     ON licencias_funcionamiento.expediente_id = expedientes.id
@@ -1385,6 +1394,8 @@ LEFT JOIN (
     WHERE estados.esta_activo = FALSE
 ) AS TLicenciasInactivas
     ON licencias_funcionamiento.id = TLicenciasInactivas.licencia_funcionamiento_id
+LEFT JOIN actividades a
+    ON licencias_funcionamiento.actividad_id = a.id
 WHERE licencias_funcionamiento.id = ANY(%s)
 ORDER BY licencias_funcionamiento.fecha_emision
 """
