@@ -457,6 +457,91 @@ export default function ReporteLicenciasPage() {
     XLSX.writeFile(wb, 'reporte-licencias-funcionamiento.xlsx')
   }
 
+  const handleExportarExcelBD = () => {
+    if (licencias.length === 0) return
+
+    const anio = (fecha) => {
+      if (!fecha) return ''
+      return new Date(String(fecha).slice(0, 10) + 'T00:00:00').getFullYear()
+    }
+
+    const datos = licencias.map((lic) => ({
+      'ITEM':                           '',
+      'INFORME ALF':                    '',
+      'FECHA INFORME ALF':              '',
+      'TIPO DE ITSE P/META':            lic.nivel_riesgo_nombre                  ?? '',
+      'BLOQUE':                         '',
+      'Nº DE EXPEDIENTE':               lic.numero_expediente
+                                          ? `${lic.numero_expediente}-${anio(lic.fecha_recepcion)}`
+                                          : '',
+      'FECHA EXPEDIENTE':               lic.fecha_recepcion                      ?? '',
+      'ADMINISTRADO / Razón SOCIAL':    lic.titular_nombre                       ?? '',
+      'Nº RUC':                         lic.titular_documentos_concatenados      ?? '',
+      'REPRESENTANTE LEGAL':            lic.conductor_nombre                     ?? '',
+      'TIPO DE DOCUMENTO':              '',
+      'Nº DNI':                         lic.conductor_documentos_concatenados    ?? '',
+      'NOMBRE COMERCIAL':               lic.nombre_comercial                     ?? '',
+      'GIRO DE NEGOCIO':                lic.giro_concatenado                     ?? '',
+      'ACTIVIDAD ECONOMICA':            lic.actividad_nombre                     ?? '',
+      'COMERCIO':                       '',
+      'SERVICIO':                       '',
+      'AREA ESTABLEC.':                 lic.area                                 ?? '',
+      'TIPO HABILITACION URBANA':       '',
+      'NOMBRE HABILITACION URBANA':     '',
+      'TIPO DE VIA':                    '',
+      'NOMBRE DE LA VIA':               '',
+      'NUMERACION':                     lic.direccion                            ?? '',
+      'ZONIFICACION':                   lic.zonificacion_nombre                  ?? '',
+      'Nº RESOLUCION':                  lic.resolucion_numero                    ?? '',
+      'FECHA RESOLUCION':               '',
+      'N° DE LICENCIA':                 lic.numero_licencia
+                                          ? `${String(lic.numero_licencia).padStart(4, '0')}-${anio(lic.fecha_emision)}`
+                                          : '',
+      'VIGENCIA':                       lic.es_vigencia_indeterminada
+                                          ? 'INDETERMINADO'
+                                          : lic.fecha_inicio_vigencia && lic.fecha_fin_vigencia
+                                            ? `${formatFecha(lic.fecha_inicio_vigencia)} - ${formatFecha(lic.fecha_fin_vigencia)}`
+                                            : '',
+      'Nº VOUCHER':                     lic.numero_recibo_pago                   ?? '',
+      'FECHA DE VOUCHER':               '',
+      'MONTO PAGADO':                   '',
+      'CESE DE CERTIFICADO':            '',
+      'EMPRESA CESIONARIO':             '',
+      'RUC CESIONARIO':                 '',
+      'DIRECCION CESIONARIO':           '',
+      'N° LICENCIA CESIONARIO':         '',
+      'ITSE N° RESOLUCION':             '',
+      'ITSE FECHA':                     '',
+      'ITSE EMPRESA':                   '',
+      'SECTORIAL RESOLUCION':           '',
+      'SECTORIAL FECHA':                '',
+      'SECTOR':                         '',
+      'ACTIVIDAD SECTORIAL':            '',
+      'RAZON SOCIAL LIC. ANTERIOR':     '',
+      'REPRESENTANTE LEGAL ANTERIOR':   '',
+      'Nº DNI ANTERIOR':                '',
+      'NOMBRE COMERCIAL LIC. ANTERIOR': '',
+      'RUC LIC. ANTERIOR':              '',
+      'ACTIVIDAD ECONOMICA LIC. ANTERIOR': '',
+      'DIRECCION LIC. ANTERIOR':        '',
+      'AREA LIC. ANTERIOR':             '',
+      'GIRO LIC. ANTERIOR':             '',
+      'N° LIC. ANTERIOR':               '',
+      'FECHA LIC. ANTERIOR':            '',
+      'N° EXP. LIC. ANTERIOR':          '',
+      'ENTIDAD EMISORA LIC. ANT.':      '',
+      'TELEFONO':                       lic.titular_telefono                     ?? '',
+      'CORREO ELECTRONICO':             lic.titular_correo_electronico           ?? '',
+      'ESTADO':                         lic.esta_activo ? 'SI' : 'NO',
+      'INFORME DE ITSE':                '',
+    }))
+
+    const ws = XLSX.utils.json_to_sheet(datos)
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, 'LicenciasBD')
+    XLSX.writeFile(wb, 'reporte-licencias-formato-bd.xlsx')
+  }
+
   return (
     <>
       <style>{`
@@ -516,6 +601,17 @@ export default function ReporteLicenciasPage() {
                           d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
                       Exportar Excel
+                    </button>
+                    <button
+                      onClick={handleExportarExcelBD}
+                      className="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white text-sm
+                                 font-medium rounded-lg hover:bg-teal-700 transition-colors"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                          d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7M4 7c0-2 1-3 3-3h10c2 0 3 1 3 3M4 7h16M9 11h6" />
+                      </svg>
+                      Exportar con formato BD
                     </button>
                   </div>
                 )}
