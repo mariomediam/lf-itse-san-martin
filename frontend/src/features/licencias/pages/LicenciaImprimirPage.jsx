@@ -14,10 +14,11 @@ const MESES = [
   'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE',
 ]
 
-const VERDE_TABLA = '#1a5a3e'
+const VERDE_TABLA = '#B0D9D0'
 const VERDE_CLARO = '#c8dfd0'
 const ROJO        = '#cc0000'
-const VERDE_PIE   = '#8CC63F'
+const VERDE_PIE   = '#D1E287'
+const VERDE_PIE_TEXTO = '#378176'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -44,7 +45,7 @@ const etiquetaDocumento = (doc) => {
 function Th({ children, style = {} }) {
   return (
     <th style={{
-      border: `1.5px solid ${VERDE_TABLA}`,
+      border: '1.5px solid #000',
       background: VERDE_CLARO,
       padding: '3px 6px',
       textAlign: 'center',
@@ -61,7 +62,7 @@ function Th({ children, style = {} }) {
 function Td({ children, style = {} }) {
   return (
     <td style={{
-      border: `1.5px solid ${VERDE_TABLA}`,
+      border: '1.5px solid #000',
       padding: '3px 6px',
       textAlign: 'center',
       verticalAlign: 'middle',
@@ -73,32 +74,6 @@ function Td({ children, style = {} }) {
   )
 }
 
-function FilaData({ label, right, children }) {
-  return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'flex-end',
-      marginBottom: '5px',
-      borderBottom: '1px solid #333',
-      paddingBottom: '2px',
-      gap: '4px',
-      minHeight: '18px',
-    }}>
-      <div style={{ width: '195px', flexShrink: 0, fontWeight: 'bold', fontSize: '9.5px', lineHeight: '1.3' }}>
-        {label}
-      </div>
-      <div style={{ marginRight: '3px', fontWeight: 'bold', fontSize: '10px' }}>:</div>
-      <div style={{ flex: 1, fontSize: '11px', fontWeight: 'bold', lineHeight: '1.3', textTransform: 'uppercase' }}>
-        {children}
-      </div>
-      {right && (
-        <div style={{ flexShrink: 0, fontSize: '10px', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
-          {right}
-        </div>
-      )}
-    </div>
-  )
-}
 
 // ── Página ────────────────────────────────────────────────────────────────────
 
@@ -191,7 +166,7 @@ const LicenciaImprimirPage = () => {
 
   // Estilos compartidos para <th> de la tabla 2
   const thSt = {
-    border: `1.5px solid ${VERDE_TABLA}`,
+    border: '1.5px solid #000',
     background: VERDE_CLARO,
     padding: '3px 6px',
     textAlign: 'center',
@@ -314,7 +289,7 @@ const LicenciaImprimirPage = () => {
               <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '48px', letterSpacing: '1px', color: '#000' }}>
                 LICENCIA DE FUNCIONAMIENTO
               </div>
-              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '28px', color: VERDE_TABLA, letterSpacing: '2px', fontWeight: 'bold', marginTop: '-6px' }}>
+              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: '28px', color: '#3C897A', letterSpacing: '2px', fontWeight: 'bold', marginTop: '-6px' }}>
                 LEY 28976
               </div>
               <div style={{ fontFamily: "'Inter', Arial, sans-serif", fontWeight: '800', fontSize: '21px', letterSpacing: '0.1px', marginTop: '2px' }}>
@@ -334,127 +309,162 @@ const LicenciaImprimirPage = () => {
               </thead>
               <tbody>
                 <tr>
-                  <Td style={{ fontWeight: 'bold', fontSize: '12px' }}>{nroExpediente}</Td>
-                  <Td style={{ fontWeight: 'bold', fontSize: '11px' }}>{formatFechaLarga(licencia.fecha_recepcion)}</Td>
-                  <Td style={{ fontWeight: 'bold', fontSize: '11px' }}>{formatFechaLarga(licencia.fecha_emision)}</Td>
-                  <Td style={{ fontWeight: 'bold', fontSize: '14px', background: '#fff5f5' }}>{nroLicencia}</Td>
+                  <Td style={{ fontWeight: 'bold', fontSize: '14px' }}>{nroExpediente}</Td>
+                  <Td style={{ fontWeight: 'bold', fontSize: '14px' }}>{formatFechaLarga(licencia.fecha_recepcion)}</Td>
+                  <Td style={{ fontWeight: 'bold', fontSize: '14px' }}>{formatFechaLarga(licencia.fecha_emision)}</Td>
+                  <Td style={{ fontWeight: 'bold', fontSize: '16px', background: '#fff' }}>{nroLicencia}</Td>
                 </tr>
               </tbody>
             </table>
 
             {/* Tabla 2: Resolución / Vigencia / Actividad Económica */}
+            {/* colgroup es la única forma fiable de fijar anchos con tableLayout:fixed
+                cuando hay colSpan en los encabezados. Los 9 valores deben sumar 100%. */}
             <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+              <colgroup>
+                <col style={{ width: '20%' }} />{/* N° DE RESOLUCIÓN          */}
+                <col style={{ width: '12%' }} />{/* Indeterminado             */}
+                <col style={{ width: '3%'  }} />{/* X indeterminado           */}
+                <col style={{ width: '12%' }} />{/* Temporal                  */}
+                <col style={{ width: '3%'  }} />{/* X temporal                */}
+                <col style={{ width: '20%' }} />{/* ACTIVIDAD ECONÓMICA       */}
+                <col style={{ width: '10%' }} />{/* Comercio                  */}
+                <col style={{ width: '10%' }} />{/* Servicio                  */}
+                <col style={{ width: '10%' }} />{/* Industria                 */}
+              </colgroup>
               <tbody>
                 {/* ── Fila 1: encabezados ── */}
                 <tr>
-                  <th style={{ ...thSt, width: '22%' }}>N° DE RESOLUCIÓN</th>
-                  <th colSpan={4} style={{ ...thSt }}>VIGENCIA</th>
-                  {/* rowSpan=2 elimina la celda vacía debajo */}
-                  <th rowSpan={2} style={{ ...thSt, width: '12%', verticalAlign: 'middle' }}>
+                  <th style={{ ...thSt, fontFamily: "'Bebas Neue', sans-serif", fontSize: '18px', fontStretch: 'condensed' }}>N° DE RESOLUCIÓN</th>
+                  <th colSpan={4} style={{ ...thSt, fontFamily: "'Bebas Neue', sans-serif", fontSize: '18px', fontStretch: 'condensed' }}>VIGENCIA</th>
+                  {/* rowSpan=2: cubre la celda vacía de la fila de datos */}
+                  <th rowSpan={2} style={{ ...thSt, verticalAlign: 'middle', fontFamily: "'Bebas Neue', sans-serif", fontSize: '18px', fontStretch: 'condensed' }}>
                     ACTIVIDAD<br />ECONÓMICA
                   </th>
-                  <th style={{ ...thSt, width: '10%' }}>Comercio</th>
-                  <th style={{ ...thSt, width: '10%' }}>Servicio</th>
-                  <th style={{ ...thSt, width: '10%' }}>Industria</th>
+                  <th style={{ ...thSt, fontFamily: "'Bebas Neue', sans-serif", fontSize: '18px', fontStretch: 'condensed' }}>Comercio</th>
+                  <th style={{ ...thSt, fontFamily: "'Bebas Neue', sans-serif", fontSize: '18px', fontStretch: 'condensed' }}>Servicio</th>
+                  <th style={{ ...thSt, fontFamily: "'Bebas Neue', sans-serif", fontSize: '18px', fontStretch: 'condensed' }}>Industria</th>
                 </tr>
-                {/* ── Fila 2: sub-etiquetas VIGENCIA + datos resolución + checkboxes ── */}
+                {/* ── Fila 2: valor resolución + sub-etiquetas VIGENCIA + checkboxes ── */}
                 <tr>
-                  <Td style={{ width: '22%', fontWeight: 'bold', textAlign: 'left', paddingLeft: '8px', fontSize: '10px' }}>
+                  <Td style={{ fontWeight: 'bold', fontSize: '14px' }}>
                     {licencia.resolucion_numero || '-'}
                   </Td>
-                  <Td style={{ width: '15%', fontSize: '8.5px', fontWeight: 'bold' }}>Indeterminado</Td>
-                  <Td style={{ width: '3%',  fontSize: '13px', fontWeight: 'bold' }}>
+                  <Td style={{ fontWeight: 'bold', fontSize: '14px' }}>Indeterminado</Td>
+                  <Td style={{ fontSize: '13px', fontWeight: 'bold' }}>
                     {licencia.es_vigencia_indeterminada ? 'X' : ''}
                   </Td>
-                  <Td style={{ width: '15%', fontSize: '8.5px', fontWeight: 'bold' }}>Temporal</Td>
-                  <Td style={{ width: '3%',  fontSize: '13px', fontWeight: 'bold' }}>
+                  <Td style={{ fontWeight: 'bold', fontSize: '14px' }}>Temporal</Td>
+                  <Td style={{ fontSize: '13px', fontWeight: 'bold' }}>
                     {!licencia.es_vigencia_indeterminada ? 'X' : ''}
                   </Td>
-                  {/* Sin celda para ACTIVIDAD — cubierta por rowSpan=2 */}
-                  <Td style={{ width: '10%', fontWeight: 'bold', fontSize: '15px' }}>{actividadId === 1 ? 'X' : ''}</Td>
-                  <Td style={{ width: '10%', fontWeight: 'bold', fontSize: '15px' }}>{actividadId === 2 ? 'X' : ''}</Td>
-                  <Td style={{ width: '10%', fontWeight: 'bold', fontSize: '15px' }}>{actividadId === 3 ? 'X' : ''}</Td>
+                  {/* Sin celda para ACTIVIDAD — cubierta por rowSpan=2 de la fila 1 */}
+                  <Td style={{ fontWeight: 'bold', fontSize: '15px', background: '#fff' }}>{actividadId === 1 ? 'X' : ''}</Td>
+                  <Td style={{ fontWeight: 'bold', fontSize: '15px', background: '#fff' }}>{actividadId === 2 ? 'X' : ''}</Td>
+                  <Td style={{ fontWeight: 'bold', fontSize: '15px', background: '#fff' }}>{actividadId === 3 ? 'X' : ''}</Td>
                 </tr>
               </tbody>
             </table>
 
-            {/* Datos del negocio + sello */}
-            <div style={{ display: 'flex', gap: '16px', flex: 1, alignItems: 'flex-start', marginTop: '2px' }}>
+            {/* ── DATOS DEL NEGOCIO + SELLO ────────────────────────────────── */}
+            {/* position:relative permite que el sello quede en la esquina inf-der
+                sin afectar el ancho de la tabla de datos */}
+            <div style={{ position: 'relative', flex: 1, marginTop: '2px' }}>
 
-              {/* Datos (izquierda) */}
-              <div style={{ flex: 1 }}>
-                <FilaData
-                  label="Razón Social / Nombre(s)"
-                  right={licencia.titular_ruc ? `RUC: ${licencia.titular_ruc}` : undefined}
-                >
-                  {licencia.titular_nombre || '-'}
-                </FilaData>
+              {/* Tabla de datos: <table> real = width:100% garantizado */}
+              <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 3px' }}>
+                <colgroup>
+                  {/* col 1: etiqueta fija */}
+                  <col style={{ width: '185px' }} />
+                  {/* col 2: dos puntos */}
+                  <col style={{ width: '12px' }} />
+                  {/* col 3: valor → toma todo el espacio restante */}
+                  <col />
+                </colgroup>
+                <tbody>
+                  {[
+                    {
+                      label: 'Razón Social / Nombre(s)',
+                      value: licencia.titular_nombre || '-',
+                      right: licencia.titular_ruc ? `RUC: ${licencia.titular_ruc}` : null,
+                    },
+                    {
+                      label: 'Representante Legal',
+                      value: licencia.conductor_nombre || '-',
+                      right: docIdentidad
+                        ? `${etiquetaDocumento(docIdentidad)}: ${docIdentidad.numero_documento}`
+                        : null,
+                    },
+                    { label: 'Nombre Comercial',             value: licencia.nombre_comercial || '-' },
+                    { label: 'Dirección del Establecimiento', value: licencia.direccion || '-' },
+                    { label: 'Giro Comercial',               value: girosTexto || '-' },
+                  ].map(({ label, value, right }) => (
+                    <tr key={label}>
+                      {/* Las tres celdas usan verticalAlign:'middle' para quedar
+                          en la misma línea horizontal */}
+                      <td style={{ fontSize: '14px', lineHeight: '1.3', verticalAlign: 'middle', padding: '7px 0', whiteSpace: 'nowrap' }}>
+                        {label}
+                      </td>
+                      <td style={{ fontWeight: 'bold', fontSize: '10px', verticalAlign: 'middle', padding: '7px 2px' }}>:</td>
+                      <td style={{ borderBottom: '1px solid #333', verticalAlign: 'middle', padding: '7px 8px 7px 0' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '14px', fontWeight: 'bold', lineHeight: '1.3', textTransform: 'uppercase' }}>
+                            {value}
+                          </span>
+                          {right && (
+                            <span style={{ fontSize: '14px', fontWeight: 'bold', whiteSpace: 'nowrap', marginLeft: '8px' }}>
+                              {right}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
 
-                <FilaData
-                  label="Representante Legal"
-                  right={docIdentidad ? `${etiquetaDocumento(docIdentidad)}: ${docIdentidad.numero_documento}` : undefined}
-                >
-                  {licencia.conductor_nombre || '-'}
-                </FilaData>
+                  {/* Fila especial: Área del Establecimiento */}
+                  <tr>
+                    <td colSpan={3} style={{ paddingTop: '2px' }}>
+                      <span style={{ fontSize: '14px' }}>
+                        Área del Establecimiento (m²):
+                      </span>
+                      <span style={{
+                        display: 'inline-block',
+                        borderBottom: '1px solid #333',
+                        minWidth: '80px',
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        paddingLeft: '4px',
+                        marginLeft: '4px',
+                        lineHeight: '1.4',
+                      }}>
+                        {licencia.area != null ? `${licencia.area}` : ''}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
 
-                <FilaData label="Nombre Comercial">
-                  {licencia.nombre_comercial || '-'}
-                </FilaData>
-
-                <FilaData label="Dirección del Establecimiento">
-                  {licencia.direccion || '-'}
-                </FilaData>
-
-                <FilaData label="Giro Comercial">
-                  {girosTexto || '-'}
-                </FilaData>
-
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: '4px', marginTop: '4px' }}>
-                  <div style={{ fontWeight: 'bold', fontSize: '9.5px' }}>
-                    Área del Establecimiento (m²):
-                  </div>
-                  <div style={{
-                    borderBottom: '1px solid #333',
-                    minWidth: '80px',
-                    fontSize: '11px',
-                    fontWeight: 'bold',
-                    paddingLeft: '4px',
-                    lineHeight: '1.4',
-                  }}>
-                    {licencia.area != null ? `${licencia.area}` : ''}
-                  </div>
-                </div>
-              </div>
-
-              {/* Sello (derecha) */}
+              {/* Sello: posicionado en la esquina inferior derecha */}
               <div style={{
-                width: '170px',
-                flexShrink: 0,
+                position: 'absolute',
+                bottom: 0,
+                right: 0,
+                width: '250px',
                 textAlign: 'center',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-end',
-                gap: '4px',
-                paddingBottom: '2px',
-                alignSelf: 'flex-end',
               }}>
-                <div>
-                  <p style={{ margin: 0, fontWeight: 'bold', fontSize: '9px', lineHeight: '1.4', textTransform: 'uppercase' }}>
-                    MUNICIPALIDAD PROVINCIAL DE SAN MARTÍN
-                  </p>
-                  <p style={{ margin: 0, fontSize: '8px', lineHeight: '1.4', textTransform: 'uppercase' }}>
-                    SUB GERENCIA DE DESARROLLO ECONÓMICO LOCAL
-                  </p>
-                </div>
+                <p style={{ margin: 0, fontWeight: 'bold', fontSize: '9px', lineHeight: '1.4', textTransform: 'uppercase' }}>
+                  MUNICIPALIDAD PROVINCIAL DE SAN MARTÍN
+                </p>
+                <p style={{ margin: 0, fontSize: '8px', lineHeight: '1.4', textTransform: 'uppercase' }}>
+                  SUB GERENCIA DE DESARROLLO ECONÓMICO LOCAL
+                </p> <br /><br /> 
                 <div style={{ borderBottom: '1px solid #000', margin: '4px 16px 2px 16px' }} />
-                <div>
-                  <p style={{ margin: 0, fontWeight: 'bold', fontSize: '8px', lineHeight: '1.5', textTransform: 'uppercase' }}>
-                    C.P.C RUTH LEYDITH HUAMANJULCA JORDAN
-                  </p>
-                  <p style={{ margin: 0, fontWeight: 'bold', fontSize: '9.5px', lineHeight: '1.3', textTransform: 'uppercase' }}>
-                    SUB GERENTE
-                  </p>
-                </div>
+                <p style={{ margin: 0, fontWeight: 'bold', fontSize: '8px', lineHeight: '1.5', textTransform: 'uppercase' }}>
+                  C.P.C RUTH LEYDITH HUAMANJULCA JORDAN
+                </p>
+                <p style={{ margin: 0, fontWeight: 'bold', fontSize: '9.5px', lineHeight: '1.3', textTransform: 'uppercase' }}>
+                  SUB GERENTE
+                </p>
               </div>
 
             </div>
@@ -463,20 +473,20 @@ const LicenciaImprimirPage = () => {
           {/* ── PIE DE PÁGINA ─────────────────────────────────────────────── */}
           <div style={{
             background: VERDE_PIE,
-            color: '#fff',
+            color: VERDE_PIE_TEXTO,
             textAlign: 'center',
-            padding: '7px 24px',
-            fontWeight: 'bold',
-            fontSize: '10.5px',
-            letterSpacing: '0.5px',
+            padding: '4px 24px',
+            fontWeight: 'bold',            
+            letterSpacing: '1.5px',
             textTransform: 'uppercase',
-            lineHeight: '1.7',
+            lineHeight: '1',
             flexShrink: 0,
+            fontFamily: "'Bebas Neue', sans-serif",
           }}>
-            <div>ES OBLIGATORIO QUE SE EXHIBA EN UN LUGAR VISIBLE.</div>
-            <div>NO AUTORIZA EL USO DE LA VÍA PÚBLICA NI EL RETIRO MUNICIPAL.</div>
+            <div style={{ fontSize: '34px' }}>ES OBLIGATORIO QUE SE EXHIBA EN UN LUGAR VISIBLE.</div>
+          <div style={{ fontSize: '28px' }}>NO AUTORIZA EL USO DE LA VÍA PÚBLICA NI EL RETIRO MUNICIPAL.</div>
+            
           </div>
-
         </div>{/* fin certificado */}
       </div>{/* fin cert-wrapper */}
     </>
