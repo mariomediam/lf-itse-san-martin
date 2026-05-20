@@ -8,6 +8,8 @@ services:
       - ./backend/.env.prod
     ports:
       - "8000:8000"
+    volumes:
+      - ./backend/media:/app/media
     depends_on:
       - db
     restart: unless-stopped

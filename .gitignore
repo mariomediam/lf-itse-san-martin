@@ -50,5 +50,6 @@ htmlcov/
 .coverage
 .pytest_cache/
 
-# Media files (archivos subidos por usuarios)
-backend/media/
+# Media files (archivos subidos por usuarios) - ignorar contenido, conservar carpeta
+backend/media/*
+!backend/media/.gitkeep

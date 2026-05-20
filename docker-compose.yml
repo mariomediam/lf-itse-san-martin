@@ -6,6 +6,7 @@ services:
     container_name: app_backend_dev
     volumes:
       - ./backend:/app
+      - ./backend/media:/app/media
     ports:
       - "8000:8000"
     env_file:
