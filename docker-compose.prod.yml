@@ -3,13 +3,11 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.prod
-    container_name: app_backend_prod
+    container_name: san_martin_backend_prod
     env_file:
       - ./backend/.env.prod
     ports:
       - "8000:8000"
-    volumes:
-      - ./backend/media:/app/media
     depends_on:
       - db
     restart: unless-stopped
@@ -23,7 +21,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
-    container_name: app_frontend_prod
+    container_name: san_martin_frontend_prod
     ports:
       - "81:80"
     depends_on:
@@ -32,13 +30,13 @@ services:
 
   db:
     image: postgres:17.9-alpine
-    container_name: app_db_prod
+    container_name: san_martin_db_prod
     env_file:
       - ./backend/.env.prod
     ports:
       - "5433:5432"
     volumes:
-      - postgres_data_prod:/var/lib/postgresql/data
+      - san_martin_postgres_data_prod:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
@@ -47,4 +45,4 @@ services:
       retries: 5
 
 volumes:
-  postgres_data_prod:
+  san_martin_postgres_data_prod:
