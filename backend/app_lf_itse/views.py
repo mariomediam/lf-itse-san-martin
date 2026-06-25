@@ -3619,6 +3619,7 @@ class VerificacionPublicaThrottle(AnonRateThrottle):
     rate = '60/min'
 
 
+
 class ConfigPublicaView(APIView):
     """
     GET /api/lf-itse/config-publica/
@@ -3765,3 +3766,190 @@ class VerificarItsePublicaView(APIView):
             'activa': activa,
             'mensaje': 'Documento registrado en la Municipalidad Provincial de San Martín.',
         })
+
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# ENDPOINTS PÚBLICOS — Búsqueda desde portal web institucional
+# ══════════════════════════════════════════════════════════════════════════════
+
+class BusquedaPublicaThrottle(AnonRateThrottle):
+    rate = '30/min'
+
+
+MAX_RESULTADOS_BUSQUEDA_PUBLICA = 50
+
+
+class BuscarLicenciaPublicaView(APIView):
+    """
+    GET /api/lf-itse/publico/licencias/buscar/?numero_licencia=1
+    GET /api/lf-itse/publico/licencias/buscar/?nombre_comercial=cafeteria
+
+    Búsqueda pública de licencias de funcionamiento para el portal web.
+    """
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    throttle_classes = [BusquedaPublicaThrottle]
+
+    def get(self, request):
+        numero_licencia = request.query_params.get('numero_licencia', '').strip()
+        nombre_comercial = request.query_params.get('nombre_comercial', '').strip()
+
+        if not numero_licencia and not nombre_comercial:
+            return Response(
+                {'error': 'Debe proporcionar al menos un criterio de búsqueda: numero_licencia o nombre_comercial.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        qs = LicenciaFuncionamiento.objects.select_related(
+            'nivel_riesgo', 'titular', 'actividad',
+        ).prefetch_related(
+            'giros__giro',
+            'historial_estados__estado',
+        )
+
+        if numero_licencia:
+            if not numero_licencia.isdigit():
+                return Response(
+                    {'error': 'El número de licencia debe ser un valor numérico.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            qs = qs.filter(numero_licencia=int(numero_licencia))
+        elif nombre_comercial:
+            if len(nombre_comercial) < 3:
+                return Response(
+                    {'error': 'El nombre comercial debe tener al menos 3 caracteres.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            qs = qs.filter(nombre_comercial__icontains=nombre_comercial)
+
+        licencias = qs[:MAX_RESULTADOS_BUSQUEDA_PUBLICA]
+
+        resultados = []
+        for licencia in licencias:
+            tiene_estado_inactivo = any(
+                not he.estado.esta_activo for he in licencia.historial_estados.all()
+            )
+            activa = not tiene_estado_inactivo
+
+            if activa and not licencia.es_vigencia_indeterminada and licencia.fecha_fin_vigencia:
+                activa = licencia.fecha_fin_vigencia >= date.today()
+
+            if licencia.es_vigencia_indeterminada:
+                vigencia = 'Indeterminada'
+            elif licencia.fecha_inicio_vigencia and licencia.fecha_fin_vigencia:
+                vigencia = f'{licencia.fecha_inicio_vigencia.isoformat()} - {licencia.fecha_fin_vigencia.isoformat()}'
+            else:
+                vigencia = '-'
+
+            titular = licencia.titular
+            titular_nombre = f'{titular.apellido_paterno} {titular.apellido_materno} {titular.nombres}'.strip() if titular else '-'
+
+            giros = [
+                {
+                    'ciiu': str(lg.giro.ciiu_id).zfill(4) if lg.giro.ciiu_id else '-',
+                    'nombre': lg.giro.nombre,
+                }
+                for lg in licencia.giros.all()
+            ]
+
+            resultados.append({
+                'numero_licencia': licencia.numero_licencia,
+                'fecha_emision': licencia.fecha_emision.isoformat(),
+                'vigencia': vigencia,
+                'nivel_riesgo': licencia.nivel_riesgo.nombre if licencia.nivel_riesgo else '',
+                'horario': f'{licencia.hora_desde}:00 - {licencia.hora_hasta}:00',
+                'titular': titular_nombre,
+                'nombre_comercial': licencia.nombre_comercial,
+                'actividad_economica': licencia.actividad.nombre if licencia.actividad else '-',
+                'direccion': licencia.direccion,
+                'area': f'{licencia.area} m²' if licencia.area is not None else '-',
+                'giros': giros,
+                'activa': activa,
+            })
+
+        return Response(resultados)
+
+
+class BuscarItsePublicaView(APIView):
+    """
+    GET /api/lf-itse/publico/itse/buscar/?numero_itse=1
+    GET /api/lf-itse/publico/itse/buscar/?nombre_comercial=cafeteria
+
+    Búsqueda pública de certificados ITSE para el portal web.
+    """
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    throttle_classes = [BusquedaPublicaThrottle]
+
+    def get(self, request):
+        numero_itse = request.query_params.get('numero_itse', '').strip()
+        nombre_comercial = request.query_params.get('nombre_comercial', '').strip()
+
+        if not numero_itse and not nombre_comercial:
+            return Response(
+                {'error': 'Debe proporcionar al menos un criterio de búsqueda: numero_itse o nombre_comercial.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        qs = Itse.objects.select_related(
+            'nivel_riesgo', 'titular',
+        ).prefetch_related(
+            'giros__giro',
+            'historial_estados__estado',
+        )
+
+        if numero_itse:
+            if not numero_itse.isdigit():
+                return Response(
+                    {'error': 'El número de ITSE debe ser un valor numérico.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            qs = qs.filter(numero_itse=int(numero_itse))
+        elif nombre_comercial:
+            if len(nombre_comercial) < 3:
+                return Response(
+                    {'error': 'El nombre comercial debe tener al menos 3 caracteres.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            qs = qs.filter(nombre_comercial__icontains=nombre_comercial)
+
+        itses = qs[:MAX_RESULTADOS_BUSQUEDA_PUBLICA]
+
+        resultados = []
+        for itse in itses:
+            tiene_estado_inactivo = any(
+                not he.estado.esta_activo for he in itse.historial_estados.all()
+            )
+            activa = not tiene_estado_inactivo
+
+            if activa:
+                activa = itse.fecha_caducidad >= date.today()
+
+            titular = itse.titular
+            titular_nombre = f'{titular.apellido_paterno} {titular.apellido_materno} {titular.nombres}'.strip() if titular else '-'
+
+            giros = [
+                {
+                    'ciiu': str(ig.giro.ciiu_id).zfill(4) if ig.giro.ciiu_id else '-',
+                    'nombre': ig.giro.nombre,
+                }
+                for ig in itse.giros.all()
+            ]
+
+            resultados.append({
+                'numero_itse': itse.numero_itse,
+                'fecha_expedicion': itse.fecha_expedicion.isoformat(),
+                'fecha_solicitud_renovacion': itse.fecha_solicitud_renovacion.isoformat(),
+                'fecha_caducidad': itse.fecha_caducidad.isoformat(),
+                'nivel_riesgo': itse.nivel_riesgo.nombre if itse.nivel_riesgo else '',
+                'titular': titular_nombre,
+                'nombre_comercial': itse.nombre_comercial,
+                'direccion': itse.direccion,
+                'area': f'{itse.area} m²' if itse.area is not None else '-',
+                'capacidad_aforo': itse.capacidad_aforo,
+                'giros': giros,
+                'activa': activa,
+            })
+
+        return Response(resultados)

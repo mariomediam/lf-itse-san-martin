@@ -72,6 +72,8 @@ from .views import (
     TipoProcedimientoTupaDetailView,
     TipoProcedimientoTupaListView,
     UnidadOrganicaListView,
+    BuscarLicenciaPublicaView,
+    BuscarItsePublicaView,
 )
 
 app_name = 'lf_itse'
@@ -175,4 +177,8 @@ urlpatterns = [
     path('config-publica/',                    ConfigPublicaView.as_view(),              name='config-publica'),
     path('verificar/licencia/<uuid:uuid>/',    VerificarLicenciaPublicaView.as_view(),   name='verificar-licencia-publica'),
     path('verificar/itse/<uuid:uuid>/',        VerificarItsePublicaView.as_view(),       name='verificar-itse-publica'),
+
+    # Búsqueda pública (portal web institucional)
+    path('publico/licencias/buscar/', BuscarLicenciaPublicaView.as_view(), name='buscar-licencia-publica'),
+    path('publico/itse/buscar/',      BuscarItsePublicaView.as_view(),     name='buscar-itse-publica'),
 ]
