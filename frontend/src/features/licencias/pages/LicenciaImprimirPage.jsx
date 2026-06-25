@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { QRCode } from 'react-qr-code'
 import { licenciasApi } from '@api/licenciasApi'
 import { personasApi } from '@api/personasApi'
+import { configPublicaApi } from '@api/configPublicaApi'
 import bgImage from '@assets/images/bg-licencia-funcionamiento-final.png'
 
 // ── Constantes ────────────────────────────────────────────────────────────────
@@ -86,14 +88,16 @@ const LicenciaImprimirPage = () => {
   const [docIdentidad, setDocIdentidad] = useState(null)
   const [cargando,     setCargando]     = useState(true)
   const [error,        setError]        = useState(null)
+  const [qrUrl,        setQrUrl]        = useState(null)
 
   useEffect(() => {
     const cargar = async () => {
       try {
         setCargando(true)
-        const [licRes, girosRes] = await Promise.all([
+        const [licRes, girosRes, configRes] = await Promise.all([
           licenciasApi.buscar('ID', id),
           licenciasApi.getGiros(id),
+          configPublicaApi.getConfig().catch(() => ({ data: {} })),
         ])
 
         const lic = licRes.data[0]
@@ -101,6 +105,12 @@ const LicenciaImprimirPage = () => {
 
         setLicencia(lic)
         setGiros(girosRes.data)
+
+        const cfg = configRes.data
+        if (cfg.qr_verificacion_habilitado && cfg.qr_url_verificar_licencia && lic.uuid) {
+          const base = cfg.qr_url_verificar_licencia.replace(/\/+$/, '')
+          setQrUrl(`${base}/${lic.uuid}`)
+        }
 
         if (lic.conductor_id) {
           try {
@@ -474,7 +484,6 @@ const LicenciaImprimirPage = () => {
           <div style={{
             background: VERDE_PIE,
             color: VERDE_PIE_TEXTO,
-            textAlign: 'center',
             padding: '4px 24px',
             fontWeight: 'bold',            
             letterSpacing: '1.5px',
@@ -482,10 +491,22 @@ const LicenciaImprimirPage = () => {
             lineHeight: '1',
             flexShrink: 0,
             fontFamily: "'Bebas Neue', sans-serif",
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
           }}>
-            <div style={{ fontSize: '34px' }}>ES OBLIGATORIO QUE SE EXHIBA EN UN LUGAR VISIBLE.</div>
-          <div style={{ fontSize: '28px' }}>NO AUTORIZA EL USO DE LA VÍA PÚBLICA NI EL RETIRO MUNICIPAL.</div>
-            
+            <div style={{ flex: 1, textAlign: 'center' }}>
+              <div style={{ fontSize: '34px' }}>ES OBLIGATORIO QUE SE EXHIBA EN UN LUGAR VISIBLE.</div>
+              <div style={{ fontSize: '28px' }}>NO AUTORIZA EL USO DE LA VÍA PÚBLICA NI EL RETIRO MUNICIPAL.</div>
+            </div>
+            {qrUrl && (
+              <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <QRCode value={qrUrl} size={72} level="M" />
+                <p style={{ fontSize: '7px', margin: '3px 0 0 0', textAlign: 'center', color: '#555', letterSpacing: '0', textTransform: 'none', fontFamily: 'Arial, sans-serif', fontWeight: 'normal' }}>
+                  Verificar documento
+                </p>
+              </div>
+            )}
           </div>
         </div>{/* fin certificado */}
       </div>{/* fin cert-wrapper */}

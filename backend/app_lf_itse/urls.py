@@ -3,6 +3,7 @@ from django.urls import path
 from .views import (
     ActividadListView,
     AutorizacionImprocedenteView,
+    ConfigPublicaView,
     DenegarItseView,
     DenegarLicenciaView,
     ExpedienteAmpliacionPlazoView,
@@ -52,6 +53,8 @@ from .views import (
     ItseInactivarView,
     ItseNotificacionView,
     ItseVerificarExpedienteView,
+    VerificarItsePublicaView,
+    VerificarLicenciaPublicaView,
     ZonificacionDetailView,
     ZonificacionListView,
     MenuUsuarioView,
@@ -167,4 +170,9 @@ urlpatterns = [
     path('usuarios/menus/',                        MenuUsuarioView.as_view(),             name='usuario-menus'),
     path('usuarios/<int:pk>/',                     UsuarioDetailView.as_view(),           name='usuario-detail'),
     path('usuarios/<int:pk>/cambiar-password/',    UsuarioCambiarPasswordView.as_view(),  name='usuario-cambiar-password'),
+
+    # Verificación pública (QR)
+    path('config-publica/',                    ConfigPublicaView.as_view(),              name='config-publica'),
+    path('verificar/licencia/<uuid:uuid>/',    VerificarLicenciaPublicaView.as_view(),   name='verificar-licencia-publica'),
+    path('verificar/itse/<uuid:uuid>/',        VerificarItsePublicaView.as_view(),       name='verificar-itse-publica'),
 ]

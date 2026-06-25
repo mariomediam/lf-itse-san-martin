@@ -49,6 +49,7 @@ class LicenciaDenegadaError(Exception):
 _SQL_BUSCAR_LF = """
 SELECT
     lf.id,
+    lf.uuid,
     lf.expediente_id,
     lf.tipo_licencia_id,
     lf.numero_licencia,
@@ -819,6 +820,7 @@ def eliminar_licencia(pk: int, usuario=None) -> None:
 _SQL_CONSULTA_LF = """
 SELECT
     lf.id,
+    lf.uuid,
     lf.expediente_id,
     lf.tipo_licencia_id,
     lf.numero_licencia,

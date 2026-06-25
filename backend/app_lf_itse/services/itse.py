@@ -30,6 +30,7 @@ class ItseNumeroDuplicadoError(Exception):
 _SQL_BUSCAR_ITSE = """
 SELECT
     i.id,
+    i.uuid,
     i.expediente_id,
     i.tipo_itse_id,
     i.numero_itse,

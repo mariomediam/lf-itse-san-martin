@@ -27,6 +27,7 @@ import InspectoresPage from '@features/inspectores/pages/InspectoresPage'
 import ZonificacionesPage from '@features/zonificaciones/pages/ZonificacionesPage'
 import TiposProcedimientoTupaPage from '@features/tipos-procedimiento-tupa/pages/TiposProcedimientoTupaPage'
 import UsuariosPage from '@features/usuarios/pages/UsuariosPage'
+import VerificarDocumentoPage from '@features/verificacion/pages/VerificarDocumentoPage'
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading, checkAuth } = useAuthStore()
@@ -296,6 +297,10 @@ function App() {
             </ProtectedRoute>
           }
         />
+        {/* Verificación pública (QR) — sin autenticación */}
+        <Route path="/verificar/licencia/:uuid" element={<VerificarDocumentoPage tipo="licencia" />} />
+        <Route path="/verificar/itse/:uuid" element={<VerificarDocumentoPage tipo="itse" />} />
+
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route 
           path="*" 

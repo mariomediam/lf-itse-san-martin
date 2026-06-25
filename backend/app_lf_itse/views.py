@@ -1,15 +1,18 @@
 import logging
 
 import mimetypes
+from datetime import date
 
+from django.conf import settings as django_settings
 from django.core.files.storage import default_storage
 from django.db.models import ProtectedError
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.parsers import FormParser, MultiPartParser
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
 
 from .models import (
@@ -3606,3 +3609,159 @@ class ItseInspectoresView(APIView):
                 {'error': str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# ENDPOINTS PÚBLICOS — Verificación QR
+# ══════════════════════════════════════════════════════════════════════════════
+
+class VerificacionPublicaThrottle(AnonRateThrottle):
+    rate = '60/min'
+
+
+class ConfigPublicaView(APIView):
+    """
+    GET /api/lf-itse/config-publica/
+
+    Public system configuration (no authentication required).
+    """
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def get(self, request):
+        return Response({
+            'qr_verificacion_habilitado': django_settings.QR_VERIFICACION_HABILITADO,
+            'qr_url_verificar_licencia': django_settings.QR_URL_VERIFICAR_LICENCIA,
+            'qr_url_verificar_itse': django_settings.QR_URL_VERIFICAR_ITSE,
+        })
+
+
+class VerificarLicenciaPublicaView(APIView):
+    """
+    GET /api/lf-itse/verificar/licencia/<uuid>/
+
+    Public verification of a business license.
+    """
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    throttle_classes = [VerificacionPublicaThrottle]
+
+    def get(self, request, uuid):
+        licencia = LicenciaFuncionamiento.objects.filter(
+            uuid=uuid,
+        ).select_related(
+            'nivel_riesgo', 'titular', 'actividad',
+        ).prefetch_related(
+            'giros__giro',
+        ).first()
+
+        if not licencia:
+            return Response(
+                {'error': 'Documento no encontrado o no disponible para consulta pública.'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        tiene_estado_inactivo = licencia.historial_estados.filter(
+            estado__esta_activo=False,
+        ).exists()
+        activa = not tiene_estado_inactivo
+
+        if activa and not licencia.es_vigencia_indeterminada and licencia.fecha_fin_vigencia:
+            activa = licencia.fecha_fin_vigencia >= date.today()
+
+        if licencia.es_vigencia_indeterminada:
+            vigencia = 'Indeterminada'
+        elif licencia.fecha_inicio_vigencia and licencia.fecha_fin_vigencia:
+            vigencia = f'{licencia.fecha_inicio_vigencia.isoformat()} - {licencia.fecha_fin_vigencia.isoformat()}'
+        else:
+            vigencia = '-'
+
+        titular = licencia.titular
+        titular_nombre = f'{titular.apellido_paterno} {titular.apellido_materno} {titular.nombres}'.strip() if titular else '-'
+
+        giros = [
+            {
+                'ciiu': str(lg.giro.ciiu_id).zfill(4) if lg.giro.ciiu_id else '-',
+                'nombre': lg.giro.nombre,
+            }
+            for lg in licencia.giros.all()
+        ]
+
+        return Response({
+            'tipo': 'licencia_funcionamiento',
+            'numero_licencia': licencia.numero_licencia,
+            'fecha_emision': licencia.fecha_emision.isoformat(),
+            'vigencia': vigencia,
+            'nivel_riesgo': licencia.nivel_riesgo.nombre if licencia.nivel_riesgo else '',
+            'horario': f'{licencia.hora_desde}:00 - {licencia.hora_hasta}:00',
+            'titular': titular_nombre,
+            'nombre_comercial': licencia.nombre_comercial,
+            'actividad_economica': licencia.actividad.nombre if licencia.actividad else '-',
+            'direccion': licencia.direccion,
+            'area': f'{licencia.area} m²' if licencia.area is not None else '-',
+            'giros': giros,
+            'activa': activa,
+            'mensaje': 'Documento registrado en la Municipalidad Provincial de San Martín.',
+        })
+
+
+class VerificarItsePublicaView(APIView):
+    """
+    GET /api/lf-itse/verificar/itse/<uuid>/
+
+    Public verification of an ITSE certificate.
+    """
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    throttle_classes = [VerificacionPublicaThrottle]
+
+    def get(self, request, uuid):
+        itse = Itse.objects.filter(
+            uuid=uuid,
+        ).select_related(
+            'nivel_riesgo', 'titular',
+        ).prefetch_related(
+            'giros__giro',
+        ).first()
+
+        if not itse:
+            return Response(
+                {'error': 'Documento no encontrado o no disponible para consulta pública.'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        tiene_estado_inactivo = itse.historial_estados.filter(
+            estado__esta_activo=False,
+        ).exists()
+        activa = not tiene_estado_inactivo
+
+        if activa:
+            activa = itse.fecha_caducidad >= date.today()
+
+        titular = itse.titular
+        titular_nombre = f'{titular.apellido_paterno} {titular.apellido_materno} {titular.nombres}'.strip() if titular else '-'
+
+        giros = [
+            {
+                'ciiu': str(ig.giro.ciiu_id).zfill(4) if ig.giro.ciiu_id else '-',
+                'nombre': ig.giro.nombre,
+            }
+            for ig in itse.giros.all()
+        ]
+
+        return Response({
+            'tipo': 'certificado_itse',
+            'numero_itse': itse.numero_itse,
+            'fecha_expedicion': itse.fecha_expedicion.isoformat(),
+            'fecha_solicitud_renovacion': itse.fecha_solicitud_renovacion.isoformat(),
+            'fecha_caducidad': itse.fecha_caducidad.isoformat(),
+            'nivel_riesgo': itse.nivel_riesgo.nombre if itse.nivel_riesgo else '',
+            'titular': titular_nombre,
+            'nombre_comercial': itse.nombre_comercial,
+            'direccion': itse.direccion,
+            'area': f'{itse.area} m²' if itse.area is not None else '-',
+            'capacidad_aforo': itse.capacidad_aforo,
+            'giros': giros,
+            'activa': activa,
+            'mensaje': 'Documento registrado en la Municipalidad Provincial de San Martín.',
+        })
